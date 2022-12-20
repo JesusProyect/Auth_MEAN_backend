@@ -35,6 +35,7 @@ const crearUsuario = async ( req, res = response ) => {
             ok: true,
             uid: dbUser.id,
             name,
+            email,
             token
         });
 
@@ -80,6 +81,7 @@ const loginUsuario = async ( req, res = response ) => {
         ok: true,
         uid: dbUser.id,
         name: dbUser.name,
+        email,
         token
     })
 
@@ -91,24 +93,25 @@ const loginUsuario = async ( req, res = response ) => {
             msg: 'Hable con el administrador'
         })
     }
-
-    return res.json({
-        ok:true,
-        msg:'Login de usuario / new'
-    });
 }
 
 const revalidarToken = async ( req, res = response ) => {
 
-    const { uid, name } = req; 
+    const { uid } = req; 
 
+    //leer de base de datos
+    const dbUser = await Usuario.findById(uid);
+
+    //aqui podriamos poner si existe si no existe devolvemos error pe en una app real lo pondria
+    
      // generar JWT
-     const token = await generarJWT( uid, name );
+     const token = await generarJWT( uid, dbUser.name );
    
     return res.json({
         ok:true,
         uid,
-        name,
+        name: dbUser.name,
+        email: dbUser.email,
         token
     });
 }
